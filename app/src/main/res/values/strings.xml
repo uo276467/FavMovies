@@ -6,9 +6,13 @@
     <string name="argumento">Argumento</string>
     <string name="argumentoPlaceholder">Sinopsis de la película</string>
     <string name="categoria">Categoría</string>
+    <string name="editar">Editar</string>
     <string name="duracion">Duración</string>
     <string name="fecha">Fecha de la película</string>
     <string name="guardar">GUARDAR</string>
     <string name="tituloActivityEntrada">FavMovies</string>
     <string name="msg_guardado">Película guardada</string>
+    <string name="msg_nueva_categoria">Se va a crear una nueva categoría</string>
+    <string name="msg_editar_categoria">Se va a modificar la categoría seleccionada</string>
+    <string name="error_campos_sin_rellenar">Campos sin rellenar:</string>
 </resources>
