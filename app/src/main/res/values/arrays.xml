@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipos_pelis_array">
+        <item>Sin definir</item>
+        <item>Acción</item>
+        <item>Aventura</item>
+        <item>Drama</item>
+        <item>Comedia</item>
+        <item>Terror</item>
+        <item>Ciencia ficción</item>
+        <item>Romance</item>
+        <item>Musical</item>
+    </string-array>
+</resources>

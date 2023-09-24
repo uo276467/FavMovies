@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FavMovies</string>
+    <string name="textoprueba">Esto es una prueba</string>
+    <string name="titulo">Título</string>
+    <string name="tituloPlaceholder">Título de la película</string>
+    <string name="argumento">Argumento</string>
+    <string name="argumentoPlaceholder">Sinopsis de la película</string>
+    <string name="categoria">Categoría</string>
+    <string name="duracion">Duración</string>
+    <string name="fecha">Fecha de la película</string>
+    <string name="guardar">GUARDAR</string>
+    <string name="tituloActivityEntrada">FavMovies</string>
+    <string name="msg_guardado">Película guardada</string>
+</resources>
