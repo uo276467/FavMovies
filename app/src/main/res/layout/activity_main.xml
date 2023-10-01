@@ -68,6 +68,7 @@
         android:id="@+id/buttonGuardar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/guardar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.928"
@@ -104,10 +105,9 @@
 
     <Button
         android:id="@+id/buttonEditar"
-        android:layout_width="61dp"
+        android:layout_width="47dp"
         android:layout_height="48dp"
         android:background="@android:drawable/ic_menu_edit"
-        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.206"

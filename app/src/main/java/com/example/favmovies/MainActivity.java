@@ -82,30 +82,31 @@ public class MainActivity extends AppCompatActivity {
                     msgCreaCategoria = Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_editar_categoria,
                                     Snackbar.LENGTH_LONG);
                 }
-            }
-        });
 
-        //Acción cancelar
-        msgCreaCategoria.setAction(android.R.string.cancel, new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(findViewById(R.id.layoutPrincipal), "Acción cancelada",
-                                Snackbar.LENGTH_LONG)
-                        .show();
-            }
-        });
+                //Acción cancelar
+                msgCreaCategoria.setAction(android.R.string.cancel, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar.make(findViewById(R.id.layoutPrincipal), "Acción cancelada",
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                    }
+                });
 
-        //Acción crear nueva categoria
-        msgCreaCategoria.setAction(android.R.string.ok, new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(findViewById(R.id.layoutPrincipal), "Acción realizada",
-                        Snackbar.LENGTH_LONG)
-                    .show();
-                modificarCategoria();
+                //Acción crear nueva categoría.
+                msgCreaCategoria.setAction(android.R.string.ok, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar.make(findViewById(R.id.layoutPrincipal), "Acción realizada",
+                                        Snackbar.LENGTH_LONG)
+                                .show();
+                        modificarCategoria();
+                    }
+                });
+
+                msgCreaCategoria.show(); //Necesario para que salga mensaje de acción realizada
             }
         });
-        msgCreaCategoria.show(); //Necesario para que salga mensaje de acción realizada
     }
 
     private void introListaSpinner(Spinner spinner, List<Categoria> listaCategorias) {
