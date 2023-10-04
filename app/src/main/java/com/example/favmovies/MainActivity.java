@@ -10,10 +10,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.favmovies.modelo.Categoria;
+import com.example.favmovies.modelo.Pelicula;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -26,11 +27,20 @@ public class MainActivity extends AppCompatActivity {
     public static final String CATEGORIA_SELECCIONADA = "categoria_seleccionada";
     public static final String CATEGORIA_MODIFICADA = "categoria_modificada";
 
-    private List<Categoria> listaCategorias;
+    private List<Categoria> listaCategorias = new ArrayList<Categoria>();
     private Spinner spinner;
     private Snackbar msgCreaCategoria = null;
 
     boolean creandoCategoria;
+
+    private Pelicula pelicula;
+
+    EditText editTitulo;
+    EditText editSinopsis;
+    EditText editDuracion;
+    EditText editFecha;
+    Button btnGuardar;
+    Button btnModifCategoria;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,22 +56,45 @@ public class MainActivity extends AppCompatActivity {
         setTitle(R.string.tituloActivityEntrada);
 
         //Inicializa el modelo de datos
-        listaCategorias = new ArrayList<Categoria>();
-        listaCategorias.add(new Categoria("Acción", "Películas de acción"));
-        listaCategorias.add(new Categoria("Comedia", "Películas de comedia"));
+        listaCategorias.add(new Categoria("Sin definir", ""));
+        listaCategorias.add(new Categoria("Acción", "Peliculas de acción"));
+        listaCategorias.add(new Categoria("Comedia", "Peliculas de comedia"));
+        listaCategorias.add(new Categoria("Bélica", "Peliculas de guerra"));
+        listaCategorias.add(new Categoria("Aventura", "Peliculas de aventura"));
+        listaCategorias.add(new Categoria("Musicales", "Peliculas musicales"));
+        listaCategorias.add(new Categoria("Drama", "Peliculas de drama"));
+
+
+        editTitulo = (EditText) findViewById(R.id.txtTitulo);
+        editSinopsis = (EditText) findViewById(R.id.txtSinopsis);
+        editDuracion = (EditText) findViewById(R.id.txtDuracion);
+        editFecha = (EditText) findViewById(R.id.txtFecha);
 
         //Inicializo el spinner
         spinner = findViewById(R.id.spCategoria);
         introListaSpinner(spinner, listaCategorias);
 
         //Recuperamos referencia al botón
-        Button btnGuardar = findViewById(R.id.buttonGuardar);
+        btnGuardar = findViewById(R.id.buttonGuardar);
+        btnModifCategoria= findViewById(R.id.buttonEditar);
+
+        //Ocultar el botón de guardar
+        btnModifCategoria.setVisibility(View.GONE);
+
+        //Recepción datos
+        Intent intentPeli= getIntent();
+
+        Pelicula pelicula=intentPeli.getParcelableExtra(MainRecycler.PELICULA_SELECCIONADA);
+        if (pelicula!=null) //apertura en modo consulta
+            abrirModoConsulta(pelicula);
+
         //Definimos listener
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Validación de campos
                 if(validarCampos())
+                    guardarPeli();
                     Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
                             Snackbar.LENGTH_LONG)
                             .show();
@@ -110,19 +143,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void introListaSpinner(Spinner spinner, List<Categoria> listaCategorias) {
-        //Creamos un nuevo array solo con los nombres de las categorías
-        ArrayList<String> nombres = new ArrayList<String>();
-        nombres.add("Sin definir");
-        for(Categoria cat : listaCategorias){
-            nombres.add(cat.getNombre());
+        // Creamos un nuevo array sólo con los nombres de las categorías
+        ArrayList<String> nombres= new ArrayList<String>();
+        for (Categoria elemento : listaCategorias) {
+            nombres.add(elemento.getNombre());
         }
-        //Crea un ArrayAdapter usando un array de strings y el layout por defecto del spinner
+        // Crea un ArrayAdapter usando un array de strings y el layout por defecto del spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, nombres);
-        //Especifica el layout para usar cuando aparece la lista de elecciones
+                android.R.layout.simple_spinner_item,nombres);
+        // Especifica el layout para usar cuando aparece la lista de elecciones
         adapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
-        //Aplicar el adaptador al spinner
+        // Aplicar el adapter al spinner
         spinner.setAdapter(adapter);
     }
 
@@ -176,35 +208,103 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validarCampos(){
-        EditText titulo = findViewById(R.id.txtTitulo);
-        EditText sinopsis = findViewById(R.id.txtSinopsis);
-        Spinner categoria = findViewById(R.id.spCategoria);
-        EditText duracion = findViewById(R.id.txtDuracion);
-        EditText fecha = findViewById(R.id.txtFecha);
+    public void guardarPeli(){
+        if (validarCampos()){
+            pelicula=new Pelicula(editTitulo.getText().toString(), editSinopsis.getText().toString(),
+                listaCategorias.get(spinner.getSelectedItemPosition()), editFecha.getText().toString(),
+                editDuracion.getText().toString());
 
+        Log.i ("guardarPeli",listaCategorias.get(spinner.getSelectedItemPosition()).getNombre() );
+        }
+        //Pasar pelicula al MainRecyclerView
+        Intent intentResultado= new Intent();
+        intentResultado.putExtra(MainRecycler.PELICULA_CREADA,pelicula);
+        setResult(RESULT_OK,intentResultado);
+        finish();
+    }
+
+    private void compartirPeli() {
+        if (!validarCampos()) return;
+        /* es necesario hacer un intent con la constate ACTION_SEND */
+        /*Llama a cualquier app que haga un envío*/
+        Intent itSend = new Intent(Intent.ACTION_SEND);
+        /* vamos a enviar texto plano */
+        itSend.setType("text/plain");
+        // itSend.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{para});
+        itSend.putExtra(Intent.EXTRA_SUBJECT,
+                getString(R.string.subject_compartir) + ": " + editTitulo.getText().toString());
+        itSend.putExtra(Intent.EXTRA_TEXT, getString(R.string.titulo)
+                +": "+editTitulo.getText().toString()+"\n"+
+                getString(R.string.argumento)
+                +": "+editSinopsis.getText().toString()
+        );
+
+        /* iniciamos la actividad */
+                /* puede haber más de una aplicacion a la que hacer un ACTION_SEND,
+                   nos sale un ventana que nos permite elegir una.
+                   Si no lo pongo y no hay activity disponible, pueda dar un error */
+        Intent shareIntent=Intent.createChooser(itSend, null);
+        startActivity(shareIntent);
+    }
+
+    //Apertura de activity en modo consulta
+    public void abrirModoConsulta(Pelicula pelicula){
+        if (!pelicula.getTitulo().isEmpty()) { //apertura en modo consulta
+
+
+            //Actualizar componentes con valores de la pelicula específica
+            editTitulo.setText(pelicula.getTitulo());
+            editSinopsis.setText(pelicula.getArgumento());
+            editDuracion.setText(pelicula.getDuracion());
+            editFecha.setText(pelicula.getFecha());
+
+            //Busqueda en la lista de categoria para colocar la posición del spinner
+            int i=0;
+            int posicion=0;
+            String nombreaccion=pelicula.getCategoria().getNombre();
+            Log.i("CategoriaAbrirModoConsulta", nombreaccion);
+
+            for (Categoria elemento : listaCategorias) {
+                if (elemento.getNombre().equals(nombreaccion))
+                    posicion = i;
+                i++;
+            }
+            spinner.setSelection(posicion);
+
+            //Inhabilitar edición de los conponentes
+            editTitulo.setEnabled(false);
+            editSinopsis.setEnabled(false);
+            editFecha.setEnabled(false);
+            editDuracion.setEnabled(false);
+            btnGuardar.setEnabled(false);
+            btnModifCategoria.setEnabled(false);
+            spinner.setEnabled(false);
+        }
+    }
+
+    private boolean validarCampos(){
         StringBuilder mensaje = new StringBuilder();
         mensaje.append(getString(R.string.error_campos_sin_rellenar));
 
         boolean errors = false;
 
-        if(titulo.getText().toString().trim().length() == 0){
+        if(editTitulo.getText().toString().trim().length() == 0){
             mensaje.append("\n" + getString(R.string.titulo));
             errors = true;
         }
-        if(sinopsis.getText().toString().length() == 0){
+        if(editSinopsis.getText().toString().length() == 0){
             mensaje.append("\n" + getString(R.string.argumento));
             errors = true;
         }
-        if(categoria.getSelectedItemPosition() == 0){
+        if(spinner.getSelectedItemPosition() == 0){
             mensaje.append("\n" + getString(R.string.categoria));
             errors = true;
         }
-        if(duracion.getText().toString().length() == 0){
+        if(editDuracion.getText().toString().length() == 0){
             mensaje.append("\n" + getString(R.string.duracion));
             errors = true;
         }
-        if(fecha.getText().toString().length() == 0){
+        if(editFecha.getText().toString().length() == 0){
             mensaje.append("\n" + getString(R.string.fecha));
             errors = true;
         }
@@ -218,5 +318,4 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
-
 }

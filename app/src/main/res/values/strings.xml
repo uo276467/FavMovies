@@ -22,4 +22,5 @@
     <string name="ok">Ok</string>
     <string name="titulo_crear_categoria">Creación nueva categoría</string>
     <string name="placeholder_descripcion_categoria">Descripción de la categoría</string>
+    <string name="subject_compartir">Compartir película</string>
 </resources>
