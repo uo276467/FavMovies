@@ -23,4 +23,6 @@
     <string name="titulo_crear_categoria">Creación nueva categoría</string>
     <string name="placeholder_descripcion_categoria">Descripción de la categoría</string>
     <string name="subject_compartir">Compartir película</string>
+    <string name="Compartir">Compartir Peli</string>
+    <string name="comprueba_conexion">No se ha establecido la conexión. Comprueba tu conexión</string>
 </resources>

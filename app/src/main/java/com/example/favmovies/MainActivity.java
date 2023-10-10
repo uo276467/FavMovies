@@ -1,5 +1,6 @@
 package com.example.favmovies;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
@@ -93,11 +97,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Validación de campos
-                if(validarCampos())
+                if(validarCampos()) {
                     guardarPeli();
                     Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
-                            Snackbar.LENGTH_LONG)
+                                    Snackbar.LENGTH_LONG)
                             .show();
+                }
             }
         });
 
@@ -211,8 +216,9 @@ public class MainActivity extends AppCompatActivity {
     public void guardarPeli(){
         if (validarCampos()){
             pelicula=new Pelicula(editTitulo.getText().toString(), editSinopsis.getText().toString(),
-                listaCategorias.get(spinner.getSelectedItemPosition()), editFecha.getText().toString(),
-                editDuracion.getText().toString());
+                listaCategorias.get(spinner.getSelectedItemPosition()), editDuracion.getText().toString(),
+                    editFecha.getText().toString()
+                );
 
         Log.i ("guardarPeli",listaCategorias.get(spinner.getSelectedItemPosition()).getNombre() );
         }
@@ -221,30 +227,6 @@ public class MainActivity extends AppCompatActivity {
         intentResultado.putExtra(MainRecycler.PELICULA_CREADA,pelicula);
         setResult(RESULT_OK,intentResultado);
         finish();
-    }
-
-    private void compartirPeli() {
-        if (!validarCampos()) return;
-        /* es necesario hacer un intent con la constate ACTION_SEND */
-        /*Llama a cualquier app que haga un envío*/
-        Intent itSend = new Intent(Intent.ACTION_SEND);
-        /* vamos a enviar texto plano */
-        itSend.setType("text/plain");
-        // itSend.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{para});
-        itSend.putExtra(Intent.EXTRA_SUBJECT,
-                getString(R.string.subject_compartir) + ": " + editTitulo.getText().toString());
-        itSend.putExtra(Intent.EXTRA_TEXT, getString(R.string.titulo)
-                +": "+editTitulo.getText().toString()+"\n"+
-                getString(R.string.argumento)
-                +": "+editSinopsis.getText().toString()
-        );
-
-        /* iniciamos la actividad */
-                /* puede haber más de una aplicacion a la que hacer un ACTION_SEND,
-                   nos sale un ventana que nos permite elegir una.
-                   Si no lo pongo y no hay activity disponible, pueda dar un error */
-        Intent shareIntent=Intent.createChooser(itSend, null);
-        startActivity(shareIntent);
     }
 
     //Apertura de activity en modo consulta
@@ -317,5 +299,59 @@ public class MainActivity extends AppCompatActivity {
         } else {
             return true;
         }
+    }
+
+    /*****MENU**************/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()==R.id.Compartir){
+            Conexion conexion=new Conexion(getApplicationContext());
+
+            if (conexion.compruebaConexion()){
+                compartirPeli();
+            }
+            else
+                Toast.makeText(getApplicationContext(), R.string.comprueba_conexion, Toast.LENGTH_LONG).show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void compartirPeli() {
+        /* es necesario hacer un intent con la constate ACTION_SEND */
+        /*Llama a cualquier app que haga un envío*/
+        Intent itSend = new Intent(Intent.ACTION_SEND);
+        /* vamos a enviar texto plano */
+        itSend.setType("text/plain");
+        // itSend.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{para});
+
+
+        EditText editTitulo= (EditText)findViewById(R.id.txtTitulo);
+        EditText editContenido= (EditText) findViewById(R.id.txtSinopsis);
+
+        itSend.putExtra(Intent.EXTRA_SUBJECT,
+                getString(R.string.subject_compartir) + ": " + editTitulo.getText().toString());
+        itSend.putExtra(Intent.EXTRA_TEXT, getString(R.string.titulo)
+                +": "+editTitulo.getText().toString()+"\n"+
+                getString(R.string.argumento)
+                +": "+editContenido.getText().toString()
+        );
+
+
+
+        /* iniciamos la actividad */
+                /* puede haber más de una aplicacion a la que hacer un ACTION_SEND,
+                   nos sale un ventana que nos permite elegir una.
+                   Si no lo pongo y no hay activity disponible, pueda dar un error */
+        Intent shareIntent=Intent.createChooser(itSend, null);
+        startActivity(shareIntent);
     }
 }
