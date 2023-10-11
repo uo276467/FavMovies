@@ -25,4 +25,13 @@
     <string name="subject_compartir">Compartir película</string>
     <string name="Compartir">Compartir Peli</string>
     <string name="comprueba_conexion">No se ha establecido la conexión. Comprueba tu conexión</string>
+    <string name="error_conexion">No se ha establecido la conexión. Por favor, conecta tu movil a Internet y vuelva a intentarlo.</string>
+    <string name="title_activity_show_movie">Tenet (2020)</string>
+    <string name="action_settings">Settings</string>
+    <string name="tenet_categoria">Acción</string>
+    <string name="estreno">Fecha de estreno</string>
+    <string name="tenet_estreno">26/08/2020</string>
+    <string name="tenet_duracion">2h 30m</string>
+    <string name="tenet_argumento">Una acción épica que gira en torno al espionaje internacional, los viajes en el tiempo y la evolución, en la que un agente secreto debe prevenir la Tercera Guerra Mundial.</string>
+    <string name="desc_caratula">Descripción carátula</string>
 </resources>

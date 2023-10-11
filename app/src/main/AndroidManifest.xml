@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +16,11 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ShowMovie"
+            android:exported="false"
+            android:label="@string/title_activity_show_movie"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".MainRecycler"
             android:exported="true">
             <intent-filter>
@@ -23,7 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".CategoriaActivity"
             android:exported="false" />

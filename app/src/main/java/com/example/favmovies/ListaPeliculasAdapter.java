@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.favmovies.modelo.Pelicula;
+import com.squareup.picasso.Picasso;
 
 public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAdapter.PeliculaViewHolder> {
 
@@ -44,16 +45,15 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
 
         // asignar valores a los componentes
         public void bindUser(final Pelicula pelicula, final OnItemClickListener listener) {
-            titulo.setText(pelicula.getTitulo()+" "+pelicula.getFecha());
+            titulo.setText(pelicula.getTitulo()+" "+pelicula.getFecha().toString());
             //fecha.setText(pelicula.getFecha());
-
             fecha.setText(pelicula.getCategoria().getNombre());
-            // cargar imagen
 
+            // cargar imagen
+            Picasso.get().load(pelicula.getUrlCaratula()).into(imagen);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    Log.i("Hola", "Hola");
                     listener.onItemClick(pelicula);
                 }
             });

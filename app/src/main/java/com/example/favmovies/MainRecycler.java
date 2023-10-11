@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,10 @@ import android.view.View;
 import com.example.favmovies.modelo.Categoria;
 import com.example.favmovies.modelo.Pelicula;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +44,8 @@ public class MainRecycler extends AppCompatActivity {
 
         //Rellenar lista de peliculas
 
-        rellenarLista();
+        //Clase 4--> rellenarLista();
+        cargarPeliculas();
 
         // Recuperamos referencia y configuramos recyclerView con la lista de usuarios
         listaPeliView = (RecyclerView)findViewById(R.id.recyclerView);
@@ -96,17 +102,70 @@ public class MainRecycler extends AppCompatActivity {
     }
 
     public void clickOnItem (Pelicula peli){
-        Log.i("Click adapter","Item Clicked "+peli.getCategoria().getNombre());
+        Log.i("Click adapter", "Item Clicked " + peli.getCategoria().getNombre());
         //Toast.makeText(MainActivity.this, "Item Clicked "+user.getId(), Toast.LENGTH_LONG).show();
 
         //Paso el modo de apertura
-        Intent intent=new Intent (MainRecycler.this, MainActivity.class);
+        Intent intent = new Intent(MainRecycler.this, ShowMovie.class);
         intent.putExtra(PELICULA_SELECCIONADA, peli);
+        //Transacion de barrido
 
-        startActivity(intent);
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
     }
 
-    private void rellenarLista(){
+    /**
+     * Lee lista de películas desde el fichero csv en assets
+     * Crea listaPeli como un ArrayList<Pelicula>
+     */
+    protected void cargarPeliculas() {
+
+        /*si una película le falta la caratual, el fondo o el trailer, le pongo unos por defecto. De esta manera me aseguro
+        estos campos en las películas*/
+
+        String Caratula_por_defecto="https://image.tmdb.org/t/p/original/jnFCk7qGGWop2DgfnJXeKLZFuBq.jpg\n";
+        String fondo_por_defecto="https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg\n";
+        String trailer_por_defecto="https://www.youtube.com/watch?v=lpEJVgysiWs\n";
+        Pelicula peli;
+        listaPeli = new ArrayList<Pelicula>();
+        InputStream file = null;
+        InputStreamReader reader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            file = getAssets().open("lista_peliculas_url_utf8.csv");
+            reader = new InputStreamReader(file);
+            bufferedReader = new BufferedReader(reader);
+
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data != null && data.length >= 5) {
+                    if (data.length==8) {
+                        peli = new Pelicula(data[0], data[1], new Categoria(data[2], ""), data[3], data[4],
+                                data[5], data[6], data[7]);
+                    } else {
+                        peli = new Pelicula(data[0], data[1], new Categoria(data[2], ""), data[3], data[4],
+                                Caratula_por_defecto, fondo_por_defecto, trailer_por_defecto);
+                    }
+                    Log.d("cargarPeliculas", peli.toString());
+                    listaPeli.add(peli);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    /*private void rellenarLista(){
         listaPeli = new ArrayList<Pelicula>();
         Categoria cataccion=new Categoria ("Acción", "PelisAccion");
         Pelicula peli1= new Pelicula("Tenet","Una acción épica que gira en " +
@@ -119,7 +178,7 @@ public class MainRecycler extends AppCompatActivity {
                 cataccion,"150","26/8/2020");
         listaPeli.add(peli1);
         listaPeli.add(peli2);
-    }
+    }*/
 
     /*Listener sobre el Fab**/
     public void crearPeliNuevaFab(View v){

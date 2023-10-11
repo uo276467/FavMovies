@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //Validación de campos
                 if(validarCampos()) {
-                    guardarPeli();
+                    //guardarPeli();
                     Snackbar.make(findViewById(R.id.layoutPrincipal), R.string.msg_guardado,
                                     Snackbar.LENGTH_LONG)
                             .show();
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void guardarPeli(){
+    /*public void guardarPeli(){
         if (validarCampos()){
             pelicula=new Pelicula(editTitulo.getText().toString(), editSinopsis.getText().toString(),
                 listaCategorias.get(spinner.getSelectedItemPosition()), editDuracion.getText().toString(),
@@ -227,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
         intentResultado.putExtra(MainRecycler.PELICULA_CREADA,pelicula);
         setResult(RESULT_OK,intentResultado);
         finish();
-    }
+    }*/
 
     //Apertura de activity en modo consulta
     public void abrirModoConsulta(Pelicula pelicula){
@@ -311,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId()==R.id.Compartir){
+        if (item.getItemId()==R.id.compartir){
             Conexion conexion=new Conexion(getApplicationContext());
 
             if (conexion.compruebaConexion()){
