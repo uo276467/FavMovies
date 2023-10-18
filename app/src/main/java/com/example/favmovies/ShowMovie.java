@@ -5,10 +5,15 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.favmovies.modelo.Pelicula;
+import com.example.favmovies.ui.ActoresFragment;
+import com.example.favmovies.ui.ArgumentoFragment;
+import com.example.favmovies.ui.InformacionFragment;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -54,14 +59,18 @@ public class ShowMovie extends AppCompatActivity {
         toolBarLayout.setTitle(getTitle());
         imagenFondo= (ImageView)findViewById(R.id.imagenFondo);
 
-        // Gestión de los controles que contienen los datos de la película
-        categoria= (TextView)findViewById(R.id.categoria);
-        estreno= (TextView)findViewById(R.id.estreno);
-        duracion= (TextView)findViewById(R.id.duracion);
-        argumento= (TextView)findViewById(R.id.argumento);
-        caratula= (ImageView)findViewById(R.id.caratula);
+        Log.i("debug", pelicula.toString());
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        Log.i("debug", navView.toString());
+        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Log.i("Mostrar datos",pelicula.toString());
+        // Gestión de los controles que contienen los datos de la película
+        categoria= (TextView)findViewById(R.id.text_categoria);
+        estreno= (TextView)findViewById(R.id.text_estreno);
+        duracion= (TextView)findViewById(R.id.text_duracion);
+        argumento= (TextView)findViewById(R.id.text_argumento);
+        caratula= (ImageView)findViewById(R.id.img_caratula);
+
         if (pelicula!=null) //apertura en modo consulta
             mostrarDatos(pelicula);
 
@@ -75,10 +84,61 @@ public class ShowMovie extends AppCompatActivity {
                 verTrailer(pelicula.getUrlTrailer());
             }
         });
+
+
     }
 
+    /**
+     * Listener del bottom_nav_menu
+     */
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        /* Cuando se selecciona uno de los botones / ítems*/
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Log.i("debug", "menu");
+            if (pelicula == null)
+                return false;
+
+            int itemId = item.getItemId();
+
+            /* Según el caso, crearemos un Fragmento u otro */
+            if (itemId == R.id.navigation_argumento)
+            {
+                /* Haciendo uso del FactoryMethod pasándole todos los parámetros necesarios */
+
+                /* Argumento solamente necesita.... El argumento de la película */
+
+                ArgumentoFragment argumentoFragment=ArgumentoFragment.newInstance
+                        (pelicula.getArgumento());
+
+                /* ¿Qué estaremos haciendo aquí? */
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, argumentoFragment).commit();
+                return true;
+            }
+
+            if (itemId == R.id.navigation_actores)
+            {
+                ActoresFragment actoresFragment = ActoresFragment.newInstance("No implementado");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, actoresFragment).commit();
+                return true;
+            }
+
+            if (itemId == R.id.navigation_info)
+            {
+                InformacionFragment informacionFragment = InformacionFragment.newInstance(
+                        pelicula.getCategoria(), pelicula.getFecha(), pelicula.getDuracion(), pelicula.getUrlCaratula());
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, informacionFragment).commit();
+                return true;
+            }
+            //Si no es nula y no entra... Algo falla.
+            throw new IllegalStateException("Unexpected value: " + item.getItemId());
+        };
+    };
+
     private void mostrarDatos(Pelicula pelicula){
-        if (!pelicula.getTitulo().isEmpty()) { //apertura en modo consulta
+        /*if (!pelicula.getTitulo().isEmpty()) { //apertura en modo consulta
             //Actualizar componentes con valores de la pelicula específica
             String fecha= pelicula.getFecha();
             toolBarLayout.setTitle(pelicula.getTitulo()+" ("+fecha.substring(fecha.lastIndexOf('/') + 1)+")");
@@ -95,7 +155,19 @@ public class ShowMovie extends AppCompatActivity {
             // Imagen de la carátula
             Picasso.get()
                     .load(pelicula.getUrlCaratula()).into(caratula);
-        }
+        }*/
+
+        //Actualizar componentes con valores de la pelicula específica
+        String fecha= pelicula.getFecha();
+        toolBarLayout.setTitle(pelicula.getTitulo()+" ("+fecha.substring(fecha.lastIndexOf('/') + 1)+")");
+        // Imagen de fondo
+        Picasso.get()
+                .load(pelicula.getUrlFondo()).into(imagenFondo);
+
+        ArgumentoFragment argumentoFragment=ArgumentoFragment.newInstance
+                (pelicula.getArgumento());
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, argumentoFragment).commit();
     }
 
     private void verTrailer(String urlTrailer){
@@ -116,14 +188,14 @@ public class ShowMovie extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id==R.id.compartir) {
+        /*if (id==R.id.compartir) {
             Conexion conexion=new Conexion(getApplicationContext());
             if (conexion.compruebaConexion()){
                 compartirPeli();
             }
             else
                 Toast.makeText(getApplicationContext(), R.string.error_conexion, Toast.LENGTH_LONG).show();
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

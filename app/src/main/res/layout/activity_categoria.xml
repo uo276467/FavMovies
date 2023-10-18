@@ -19,7 +19,7 @@
         tools:text="@string/titulo_crear_categoria" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvEstreno"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nombre_categoria"
