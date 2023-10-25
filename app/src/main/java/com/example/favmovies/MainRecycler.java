@@ -11,7 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.favmovies.datos.AppDatabase;
 import com.example.favmovies.modelo.Categoria;
+import com.example.favmovies.modelo.Interprete;
+import com.example.favmovies.modelo.InterpretePeliculaCrossRef;
 import com.example.favmovies.modelo.Pelicula;
 
 import java.io.BufferedReader;
@@ -37,6 +40,8 @@ public class MainRecycler extends AppCompatActivity {
     Pelicula peli;
     RecyclerView listaPeliView;
 
+    private AppDatabase appDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +50,8 @@ public class MainRecycler extends AppCompatActivity {
         //Rellenar lista de peliculas
 
         //Clase 4--> rellenarLista();
-        cargarPeliculas();
+        //Muevo cargarPeliculas() a onResume()
+        //cargarPeliculas();
 
         // Recuperamos referencia y configuramos recyclerView con la lista de usuarios
         listaPeliView = (RecyclerView)findViewById(R.id.recyclerView);
@@ -56,6 +62,21 @@ public class MainRecycler extends AppCompatActivity {
            RecyclerView.LayoutManager. Sin embargo, en la mayoría de los casos, simplemente se usa
            una de las subclases LayoutManager predefinidas: LinearLayoutManager, GridLayoutManager,
            StaggeredGridLayoutManager*/
+
+
+
+    }
+
+    /**
+     * Se ejecuta después de onCreate
+     */
+    @Override
+    public void onResume(){
+        super.onResume();
+        appDatabase = AppDatabase.getDatabase(this);
+        cargarPeliculas();
+        listaPeli = appDatabase.getPeliculaDAO().getAll();
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         listaPeliView.setLayoutManager(layoutManager);
 
@@ -126,29 +147,31 @@ public class MainRecycler extends AppCompatActivity {
         String fondo_por_defecto="https://image.tmdb.org/t/p/original/xJWPZIYOEFIjZpBL7SVBGnzRYXp.jpg\n";
         String trailer_por_defecto="https://www.youtube.com/watch?v=lpEJVgysiWs\n";
         Pelicula peli;
-        listaPeli = new ArrayList<Pelicula>();
+        //listaPeli = new ArrayList<Pelicula>();
         InputStream file = null;
         InputStreamReader reader = null;
         BufferedReader bufferedReader = null;
 
         try {
-            file = getAssets().open("lista_peliculas_url_utf8.csv");
+            file = getAssets().open("peliculas.csv");
             reader = new InputStreamReader(file);
             bufferedReader = new BufferedReader(reader);
 
             String line = null;
+            bufferedReader.readLine();
             while ((line = bufferedReader.readLine()) != null) {
                 String[] data = line.split(";");
                 if (data != null && data.length >= 5) {
-                    if (data.length==8) {
-                        peli = new Pelicula(data[0], data[1], new Categoria(data[2], ""), data[3], data[4],
-                                data[5], data[6], data[7]);
+                    if (data.length==9) {
+                        peli = new Pelicula(data[0], data[1], data[2], new Categoria(data[3], ""), data[4],
+                                data[5], data[6], data[7], data[8]);
                     } else {
-                        peli = new Pelicula(data[0], data[1], new Categoria(data[2], ""), data[3], data[4],
+                        peli = new Pelicula(data[0], data[1], data[2], new Categoria(data[3], ""), data[4], data[5],
                                 Caratula_por_defecto, fondo_por_defecto, trailer_por_defecto);
                     }
                     Log.d("cargarPeliculas", peli.toString());
-                    listaPeli.add(peli);
+                    //listaPeli.add(peli);
+                    appDatabase.getPeliculaDAO().add(peli);
                 }
             }
         } catch (IOException e) {
@@ -162,7 +185,77 @@ public class MainRecycler extends AppCompatActivity {
                 }
             }
         }
+    }
 
+    private void cargarInterpretes() {
+
+        Interprete interprete;
+        InputStream file = null;
+        InputStreamReader reader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            file = getAssets().open("interpretes.csv");
+            reader = new InputStreamReader(file);
+            bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine();
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data != null) {
+                    if (data.length==4) {
+                        interprete = new Interprete(Integer.parseInt(data[0]),data[1],data[2],data[3]);
+                        appDatabase.getInterpreteDao().add(interprete);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void cargarReparto() {
+
+        InterpretePeliculaCrossRef interpretePeliculaCrossRef;
+        InputStream file = null;
+        InputStreamReader reader = null;
+        BufferedReader bufferedReader = null;
+
+        try {
+            file = getAssets().open("peliculas-reparto.csv");
+            reader = new InputStreamReader(file);
+            bufferedReader = new BufferedReader(reader);
+            bufferedReader.readLine();
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] data = line.split(";");
+                if (data != null) {
+                    if (data.length==2) {
+                        interpretePeliculaCrossRef = new InterpretePeliculaCrossRef(
+                                Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /*private void rellenarLista(){

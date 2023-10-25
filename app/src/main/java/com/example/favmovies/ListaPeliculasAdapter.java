@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.favmovies.modelo.Pelicula;
+import com.example.favmovies.util.Url;
 import com.squareup.picasso.Picasso;
 
 public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAdapter.PeliculaViewHolder> {
@@ -33,13 +34,13 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
     public static class PeliculaViewHolder extends RecyclerView.ViewHolder{
 
         private TextView titulo;
-        private TextView fecha;
+        private TextView categoria;
         private ImageView imagen;
 
         public PeliculaViewHolder(View itemView) {
             super(itemView);
             titulo= (TextView)itemView.findViewById(R.id.titulopeli);
-            fecha= (TextView)itemView.findViewById(R.id.fechaestreno);
+            categoria = (TextView)itemView.findViewById(R.id.fechaestreno);
             imagen= (ImageView)itemView.findViewById(R.id.imagen);
         }
 
@@ -47,10 +48,10 @@ public class ListaPeliculasAdapter extends RecyclerView.Adapter<ListaPeliculasAd
         public void bindUser(final Pelicula pelicula, final OnItemClickListener listener) {
             titulo.setText(pelicula.getTitulo()+" "+pelicula.getFecha().toString());
             //fecha.setText(pelicula.getFecha());
-            fecha.setText(pelicula.getCategoria().getNombre());
+            categoria.setText(pelicula.getCategoria().getNombre());
 
             // cargar imagen
-            Picasso.get().load(pelicula.getUrlCaratula()).into(imagen);
+            Picasso.get().load(Url.URL_IMAGEN_INTERPRETE + pelicula.getUrlCaratula()).into(imagen);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {

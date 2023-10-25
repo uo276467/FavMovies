@@ -8,6 +8,7 @@ import com.example.favmovies.modelo.Pelicula;
 import com.example.favmovies.ui.ActoresFragment;
 import com.example.favmovies.ui.ArgumentoFragment;
 import com.example.favmovies.ui.InformacionFragment;
+import com.example.favmovies.util.Url;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -128,7 +129,7 @@ public class ShowMovie extends AppCompatActivity {
             if (itemId == R.id.navigation_info)
             {
                 InformacionFragment informacionFragment = InformacionFragment.newInstance(
-                        pelicula.getCategoria(), pelicula.getFecha(), pelicula.getDuracion(), pelicula.getUrlCaratula());
+                        pelicula.getTitulo(), pelicula.getCategoria(), pelicula.getFecha(), pelicula.getDuracion(), pelicula.getUrlCaratula());
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, informacionFragment).commit();
                 return true;
             }
@@ -162,7 +163,7 @@ public class ShowMovie extends AppCompatActivity {
         toolBarLayout.setTitle(pelicula.getTitulo()+" ("+fecha.substring(fecha.lastIndexOf('/') + 1)+")");
         // Imagen de fondo
         Picasso.get()
-                .load(pelicula.getUrlFondo()).into(imagenFondo);
+                .load(Url.URL_IMAGEN_INTERPRETE + pelicula.getUrlFondo()).into(imagenFondo);
 
         ArgumentoFragment argumentoFragment=ArgumentoFragment.newInstance
                 (pelicula.getArgumento());
@@ -171,7 +172,7 @@ public class ShowMovie extends AppCompatActivity {
     }
 
     private void verTrailer(String urlTrailer){
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(urlTrailer)));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Url.URL_TRAILER + urlTrailer)));
     }
 
     // Gestión del menú

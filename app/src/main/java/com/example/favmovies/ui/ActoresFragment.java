@@ -9,6 +9,12 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.example.favmovies.R;
+import com.example.favmovies.modelo.InterpretePeliculaCrossRef;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class ActoresFragment extends Fragment {
 
@@ -49,8 +55,8 @@ public class ActoresFragment extends Fragment {
 
         //Mostramos el fragmento en el contenedor
         View root= inflater.inflate(R.layout.fragment_actores, container, false);
-        TextView tvActores = root.findViewById(R.id.text_actores);
-        tvActores.setText(actoresPeli);
+        //TextView tvActores = root.findViewById(R.id.text_actores);
+        //tvActores.setText(actoresPeli);
         return root;
     }
 }

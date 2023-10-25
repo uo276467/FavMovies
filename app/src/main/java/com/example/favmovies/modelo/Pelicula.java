@@ -4,52 +4,121 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-public class Pelicula implements Parcelable {
 
+/*
+    La anotación @Entity nos permite indicar que se mapeará en la base de datos como una tabla.
+    Opcionalmente podemos indicar el nombre de la tabla mediante tableName.
+ */
+@Entity(tableName = "peliculas")
+public class Pelicula implements Parcelable{
+
+    /*
+        Con @PrimaryKey indicamos que es id es clave primaria.
+            Es posible hacer lo siguiente: @PrimaryKey(autoGenerate = true)
+        @NonNull es autoexplicativo.
+     */
+    @PrimaryKey
+    @NonNull
+    int id;
+
+
+    /*
+        Con @ColumnInfo podemos indicar el nombre de la columna en la tabla
+     */
+    @ColumnInfo(name="titulo")
     String titulo;
+
+
     String argumento;
+
+
+    /*
+        Esto es lo más importante de este fichero.
+        Categoria es un objeto y Room no almacena referencias a objetos.
+
+        Una posibilidad sería utilizar un conversor:
+            https://developer.android.com/training/data-storage/room/referencing-data?hl=es-419
+
+        Sin embargo, vamos a solucionarlo con @Embebbed
+        Esto añadirá tantas columnas a la tabla películas como atributos tenga Categoría.
+        Mediante prefix indicamos un prefijo, creándose las columnas:
+            categoria_nombre y categoria_descripcion
+
+     */
+    @Embedded(prefix="categoria_")
     Categoria categoria;
+
+
     String duracion;
     String fecha;
+
+
+    //EJERCICIO: El nombre de la columna será url_caratula
+    @ColumnInfo(name="url_caratula")
     String urlCaratula;
+
+    //EJERCICIO: El nombre de la columna será url_fondo
+    @ColumnInfo(name="url_fondo")
     String urlFondo;
+
+    //EJERCICIO: El nombre de la columna será url_trailer
+    @ColumnInfo(name="url_trailer")
     String urlTrailer;
 
+    //EJERCICIO: Añade la id al constructor, getter, setter, toString y parcelable.
     public Pelicula(String titulo, String argumento, Categoria categoria, String duracion, String fecha,
-                    String urlCaratula, String urlFondo, String urlTrailer ) {
+                    String caratula, String fondo, String trailer) {
         this.titulo = titulo;
         this.argumento = argumento;
         this.categoria = categoria;
         this.duracion = duracion;
         this.fecha = fecha;
-        this. urlCaratula = urlCaratula;
-        this.urlFondo = urlFondo;
-        this.urlTrailer = urlTrailer;
+
+        this.urlCaratula= caratula;
+        this.urlFondo= fondo;
+        this.urlTrailer= trailer;
     }
 
-    protected Pelicula(Parcel in) {
-        titulo = in.readString();
-        argumento = in.readString();
-        categoria = in.readParcelable(Categoria.class.getClassLoader());
-        duracion = in.readString();
-        fecha = in.readString();
-        urlCaratula = in.readString();
-        urlFondo = in.readString();
-        urlTrailer = in.readString();
+    public Pelicula(String id, String titulo, String argumento, Categoria categoria, String duracion, String fecha,
+                    String caratula, String fondo, String trailer) {
+        this.id = Integer.parseInt(id);
+        this.titulo = titulo;
+        this.argumento = argumento;
+        this.categoria = categoria;
+        this.duracion = duracion;
+        this.fecha = fecha;
+
+        this.urlCaratula= caratula;
+        this.urlFondo= fondo;
+        this.urlTrailer= trailer;
     }
 
-    public static final Creator<Pelicula> CREATOR = new Creator<Pelicula>() {
-        @Override
-        public Pelicula createFromParcel(Parcel in) {
-            return new Pelicula(in);
-        }
+	//Constructor por defecto para evitar problemas.
+	public Pelicula() {}
 
-        @Override
-        public Pelicula[] newArray(int size) {
-            return new Pelicula[size];
-        }
-    };
+    @Override
+    public String toString() {
+        return "Pelicula{" +
+                "titulo='" + titulo + '\'' +
+                ", argumento='" + argumento + '\'' +
+                ", categoria=" + categoria.toString() +
+                ", duracion='" + duracion + '\'' +
+                ", fecha='" + fecha + '\'' +
+                '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTitulo() {
         return titulo;
@@ -91,6 +160,7 @@ public class Pelicula implements Parcelable {
         this.fecha = fecha;
     }
 
+
     public String getUrlCaratula() {
         return urlCaratula;
     }
@@ -114,12 +184,16 @@ public class Pelicula implements Parcelable {
     public void setUrlTrailer(String urlTrailer) {
         this.urlTrailer = urlTrailer;
     }
-
     @Override
     public int describeContents() {
         return 0;
     }
 
+
+	/* 
+		Interface Parcelable 
+	*/
+	
     @Override
     public void writeToParcel(@NonNull Parcel parcel, int i) {
         parcel.writeString(titulo);
@@ -130,19 +204,31 @@ public class Pelicula implements Parcelable {
         parcel.writeString(urlCaratula);
         parcel.writeString(urlFondo);
         parcel.writeString(urlTrailer);
+
+
     }
 
-    @Override
-    public String toString() {
-        return "Pelicula{" +
-                "titulo='" + titulo + '\'' +
-                ", argumento='" + argumento + '\'' +
-                ", categoria=" + categoria +
-                ", duracion='" + duracion + '\'' +
-                ", fecha='" + fecha + '\'' +
-                ", urlCaratula='" + urlCaratula + '\'' +
-                ", urlFondo='" + urlFondo + '\'' +
-                ", urlTrailer='" + urlTrailer + '\'' +
-                '}';
+    protected Pelicula(Parcel in) {
+
+        titulo = in.readString();
+        argumento = in.readString();
+        categoria = in.readParcelable(Categoria.class.getClassLoader());
+        duracion = in.readString();
+        fecha = in.readString();
+        urlCaratula= in.readString();
+        urlFondo= in.readString();
+        urlTrailer= in.readString();
     }
+
+    public static final Creator<Pelicula> CREATOR = new Creator<Pelicula>() {
+        @Override
+        public Pelicula createFromParcel(Parcel in) {
+            return new Pelicula(in);
+        }
+
+        @Override
+        public Pelicula[] newArray(int size) {
+            return new Pelicula[size];
+        }
+    };	
 }
